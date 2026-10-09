@@ -3,9 +3,10 @@ package com.example.nasaspaceimages.data.repository
 import com.example.nasaspaceimages.domain.model.MediaType
 import com.example.nasaspaceimages.domain.model.SpaceImage
 import com.example.nasaspaceimages.domain.repository.SpaceImageRepository
+import javax.inject.Inject
 
 
-class SpaceImageRepositoryImpl: SpaceImageRepository{
+class SpaceImageRepositoryImpl @Inject constructor(): SpaceImageRepository{
     private val savedImages = mutableListOf<SpaceImage>(
         SpaceImage(
             id = 1,
