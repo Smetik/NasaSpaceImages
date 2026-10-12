@@ -3,8 +3,9 @@ package com.example.nasaspaceimages.domain.usecase
 import com.example.nasaspaceimages.domain.model.SortOption
 import com.example.nasaspaceimages.domain.model.SpaceImage
 import com.example.nasaspaceimages.domain.repository.SpaceImageRepository
+import javax.inject.Inject
 
-class SortSpaceImagesUseCase (private val repository: SpaceImageRepository) {
+class SortSpaceImagesUseCase @Inject constructor (private val repository: SpaceImageRepository) {
     suspend operator fun invoke (sortBy: SortOption): List<SpaceImage> {
         val spaceImages = repository.getSavedImages()
 
