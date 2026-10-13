@@ -40,6 +40,8 @@ android {
 dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.hilt.lifecycle.viewmodel.compose)
