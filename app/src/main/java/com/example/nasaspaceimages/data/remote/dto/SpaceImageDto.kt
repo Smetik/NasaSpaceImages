@@ -9,7 +9,7 @@ data class SpaceImageDto (
     val center: String = "",
 
     @SerialName("data_created")
-    val dateCreated: String,
+    val dateCreated: String = "",
 
     val description: String,
     val keywords: List<String>,
