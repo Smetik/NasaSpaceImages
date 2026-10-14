@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun SpaceImageListScreen(
@@ -18,14 +19,21 @@ fun SpaceImageListScreen(
 {
     val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(viewModel) {
+        viewModel.refreshImages()
+    }
+
     Column(modifier = modifier) {
-        if (uiState.isLoading){
+        if (uiState.isLoading) {
             CircularProgressIndicator()
-        }
-        else{
-            LazyColumn() {
-                items(uiState.images){
-                    image -> Text(text = image.title)
+
+        } else if (uiState.images.isEmpty()) {
+            Text("Пока нет сохранённых изображений")
+
+        } else {
+            LazyColumn {
+                items(uiState.images) { image ->
+                    Text(text = image.title)
                 }
             }
         }

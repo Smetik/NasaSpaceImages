@@ -47,4 +47,8 @@ class SpaceImageListViewModel @Inject constructor(
 
         loadImages()
     }
+
+    fun refreshImages() {
+        loadImages()
+    }
 }
