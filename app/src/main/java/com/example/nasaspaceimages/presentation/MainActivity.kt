@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.nasaspaceimages.presentation.searchspaceimages.SearchSpaceImagesScreen
 import com.example.nasaspaceimages.presentation.spaceimageslist.SpaceImageListScreen
 import com.example.nasaspaceimages.presentation.theme.NASASpaceImagesTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             NASASpaceImagesTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SpaceImageListScreen(modifier = Modifier.padding(innerPadding))
+                    SearchSpaceImagesScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
