@@ -6,25 +6,88 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.nasaspaceimages.presentation.searchspaceimages.SearchSpaceImagesScreen
 import com.example.nasaspaceimages.presentation.spaceimageslist.SpaceImageListScreen
 import com.example.nasaspaceimages.presentation.theme.NASASpaceImagesTheme
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.setValue
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             NASASpaceImagesTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SearchSpaceImagesScreen(modifier = Modifier.padding(innerPadding))
+
+                var selectedTab by rememberSaveable {
+                    mutableIntStateOf(0)
+                }
+
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+
+                    bottomBar = {
+                        NavigationBar {
+
+                            NavigationBarItem(
+                                selected = selectedTab == 0,
+                                onClick = {
+                                    selectedTab = 0
+                                },
+                                icon = {
+                                    Icon(
+                                        Icons.Default.Search,
+                                        contentDescription = null
+                                    )
+                                },
+                                label = {
+                                    Text("Поиск NASA")
+                                }
+                            )
+
+                            NavigationBarItem(
+                                selected = selectedTab == 1,
+                                onClick = {
+                                    selectedTab = 1
+                                },
+                                icon = {
+                                    Icon(
+                                        Icons.Default.List,
+                                        contentDescription = null
+                                    )
+                                },
+                                label = {
+                                    Text("Мой каталог")
+                                }
+                            )
+                        }
+                    }
+                ) { innerPadding ->
+
+                    when (selectedTab) {
+                        0 -> SearchSpaceImagesScreen(
+                            modifier = Modifier.padding(innerPadding)
+                        )
+
+                        1 -> SpaceImageListScreen(
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
                 }
             }
         }
