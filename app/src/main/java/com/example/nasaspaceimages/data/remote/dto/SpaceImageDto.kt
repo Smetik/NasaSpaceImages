@@ -9,10 +9,10 @@ data class SpaceImageDto (
     val center: String = "",
 
     @SerialName("data_created")
-    val dateCreated: String,
+    val dateCreated: String = "",
 
     val description: String,
-    val keywords: List<String>,
+    val keywords: List<String> = emptyList(),
 
     @SerialName("media_type")
     val mediaType : String,
