@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.retrofit.kotlinx.serialization)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.compose.material.icons.extended)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
     ksp(libs.androidx.room.compiler)
