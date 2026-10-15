@@ -8,12 +8,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import androidx.lifecycle.viewModelScope
 import com.example.nasaspaceimages.domain.model.SortOption
+import com.example.nasaspaceimages.domain.model.SpaceImage
+import com.example.nasaspaceimages.domain.usecase.UpdateSpaceImageUseCase
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class SpaceImageListViewModel @Inject constructor(
-    private val sortSpaceImagesUseCase: SortSpaceImagesUseCase
+    private val sortSpaceImagesUseCase: SortSpaceImagesUseCase,
+    private val updateSpaceImageUseCase: UpdateSpaceImageUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SpaceImageListUiState())
@@ -50,5 +53,16 @@ class SpaceImageListViewModel @Inject constructor(
 
     fun refreshImages() {
         loadImages()
+    }
+
+    fun toggleFavorite(image: SpaceImage) {
+        viewModelScope.launch {
+            val updatedImage = image.copy(
+                isFavorite = !image.isFavorite
+            )
+
+            updateSpaceImageUseCase(updatedImage)
+            refreshImages()
+        }
     }
 }

@@ -43,7 +43,9 @@ fun SearchSpaceImagesScreen (
     }
 
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .fillMaxWidth()
     ) {
         Column(
             modifier = modifier
@@ -79,7 +81,11 @@ fun SearchSpaceImagesScreen (
 
                 else -> {
 
-                    LazyColumn {
+                    LazyColumn (
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ){
                         items(uiState.images) { image ->
                             Card(
                                 modifier = Modifier
@@ -118,7 +124,6 @@ fun SearchSpaceImagesScreen (
                 }
             }
         }
-
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)

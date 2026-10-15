@@ -28,6 +28,10 @@ class SearchSpaceImagesViewModel @Inject constructor(
     val uiState: StateFlow<SearchImagesUiState> = _uiState.asStateFlow()
 
 
+    init {
+        search()
+    }
+
     fun onQueryChange(query: String){
         _uiState.update{
             it.copy(
