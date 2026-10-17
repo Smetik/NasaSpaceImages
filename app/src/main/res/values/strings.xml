@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">NASA Space Images</string>
+
+    <string name="sort_title_asc">Название: A–Z</string>
+    <string name="sort_title_desc">Название: Z–A</string>
+    <string name="sort_date_newest">Сначала недавно сохраненные</string>
+    <string name="sort_date_oldest">Сначала давно сохраненные</string>
+    <string name="sort_favorite_first">Сначала избранные</string>
+    <string name="sort_favorite_last">Избранные в конце</string>
 </resources>
