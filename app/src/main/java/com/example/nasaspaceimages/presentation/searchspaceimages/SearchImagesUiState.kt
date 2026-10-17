@@ -9,5 +9,8 @@ data class SearchImagesUiState (
     val errorMessage: String? = null,
     val hasSearched: Boolean = false,
     val page: Int = 1,
-    val hasNextPage: Boolean = false
+    val hasNextPage: Boolean = false,
+    val center: String = "",
+    val yearStart: String = "",
+    val yearEnd: String = ""
 )
