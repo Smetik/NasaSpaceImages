@@ -6,6 +6,7 @@ data class SpaceImage (
     val title: String,
     val description: String,
     val dateCreated: String,
+    val center: String = "",
     val type: MediaType,
     val mediaUrl: String,
     val keywords: List<String>,
