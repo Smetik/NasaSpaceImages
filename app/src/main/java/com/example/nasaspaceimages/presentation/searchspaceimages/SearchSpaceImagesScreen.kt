@@ -43,12 +43,10 @@ fun SearchSpaceImagesScreen (
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .fillMaxWidth()
+        modifier = modifier.fillMaxSize()
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
@@ -123,6 +121,7 @@ fun SearchSpaceImagesScreen (
                     }
                 }
             }
+
         }
         SnackbarHost(
             hostState = snackbarHostState,

@@ -6,8 +6,15 @@ import javax.inject.Inject
 
 class SaveSpaceImageUseCase @Inject constructor(
     private val repository: SpaceImageRepository
-) {
-    suspend operator fun invoke(image: SpaceImage) {
+){
+    suspend operator fun invoke(image: SpaceImage):Boolean {
+        val savedImages = repository.getSavedImages()
+
+        if (savedImages.any { it.nasaId == image.nasaId }) {
+            return false
+        }
         repository.saveImage(image)
+        return true
+
     }
 }
