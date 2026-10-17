@@ -15,93 +15,132 @@ import com.example.nasaspaceimages.domain.model.SpaceImage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 
 @Composable
 fun SpaceImageDetailScreen(
     image: SpaceImage,
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: SpaceImageDetailViewModel = hiltViewModel()
 ) {
     BackHandler(onBack = onBack)
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
+    val snackbarHostState = remember { SnackbarHostState() }
 
-        OutlinedButton(onClick = onBack) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = null
-            )
-            Spacer(Modifier.width(8.dp))
-            Text("Назад")
+    LaunchedEffect(viewModel) {
+        viewModel.messages.collect { message ->
+            snackbarHostState.showSnackbar(message)
         }
+    }
 
-        Text(
-            text = image.title,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
+    Box(modifier = modifier.fillMaxSize()) {
 
-        AsyncImage(
-            model = image.mediaUrl,
-            contentDescription = image.title,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(320.dp),
-            contentScale = ContentScale.Fit
-        )
-
-        HorizontalDivider()
-
-        Text("NASA ID: ${image.nasaId}")
-
-        if (image.center.isNotBlank()) {
-            Text("Центр NASA: ${image.center}")
-        }
-
-        if (image.dateCreated.isNotBlank()) {
-            Text("Дата создания: ${image.dateCreated}")
-        }
-
-        Text("Тип: ${image.type.name}")
-
-        if (image.keywords.isNotEmpty()) {
-            Text(
-                "Ключевые слова: ${image.keywords.joinToString(", ")}"
-            )
-        }
-
-        if (image.isFavorite) {
-            Text("★ В избранном")
-        }
-
-        HorizontalDivider()
-
-        Text(
-            text = "Описание",
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        Text(
-            text = image.description.ifBlank {
-                "Описание отсутствует"
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = null
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("Назад")
             }
-        )
 
-        if (image.comment.isNotBlank()) {
+            Text(
+                text = image.title,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+
+            AsyncImage(
+                model = image.mediaUrl,
+                contentDescription = image.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(320.dp),
+                contentScale = ContentScale.Fit
+            )
+
+            FilledTonalButton(
+                onClick = {
+                    viewModel.downloadImage(image)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Download,
+                    contentDescription = null
+                )
+
+                Spacer(Modifier.width(8.dp))
+
+                Text("Скачать оригинал")
+            }
+
+            HorizontalDivider()
+
+            Text("NASA ID: ${image.nasaId}")
+
+            if (image.center.isNotBlank()) {
+                Text("Центр NASA: ${image.center}")
+            }
+
+            if (image.dateCreated.isNotBlank()) {
+                Text("Дата создания: ${image.dateCreated}")
+            }
+
+            Text("Тип: ${image.type.name}")
+
+            if (image.keywords.isNotEmpty()) {
+                Text(
+                    "Ключевые слова: ${image.keywords.joinToString(", ")}"
+                )
+            }
+
+            if (image.isFavorite) {
+                Text("★ В избранном")
+            }
+
             HorizontalDivider()
 
             Text(
-                text = "Мой комментарий",
+                text = "Описание",
                 style = MaterialTheme.typography.titleMedium
             )
 
-            Text(image.comment)
+            Text(
+                text = image.description.ifBlank {
+                    "Описание отсутствует"
+                }
+            )
+
+            if (image.comment.isNotBlank()) {
+                HorizontalDivider()
+
+                Text(
+                    text = "Мой комментарий",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Text(image.comment)
+            }
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }

@@ -1,5 +1,6 @@
 package com.example.nasaspaceimages.data.repository
 
+import com.example.nasaspaceimages.data.local.AndroidImageDownloader
 import com.example.nasaspaceimages.data.local.SpaceImageLocalDataSource
 import com.example.nasaspaceimages.data.remote.SpaceImageRemoteDataSource
 import com.example.nasaspaceimages.domain.model.SearchFilters
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 class SpaceImageRepositoryImpl @Inject constructor(
     private val localDataSource: SpaceImageLocalDataSource,
-    private val remoteDataSource: SpaceImageRemoteDataSource
+    private val remoteDataSource: SpaceImageRemoteDataSource,
+    private val imageDownloader: AndroidImageDownloader
 ): SpaceImageRepository{
 
     override suspend fun getSavedImages(): List<SpaceImage> {
@@ -46,4 +48,14 @@ class SpaceImageRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun downloadImage(image: SpaceImage): Long {
+        val url = remoteDataSource.getOriginalImageUrl(image.nasaId)
+            ?: image.mediaUrl
+
+        return imageDownloader.download(
+            url = url,
+            nasaId = image.nasaId,
+            title = image.title
+        )
+    }
 }
