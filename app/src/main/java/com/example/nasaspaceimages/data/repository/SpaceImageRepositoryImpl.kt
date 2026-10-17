@@ -2,7 +2,7 @@ package com.example.nasaspaceimages.data.repository
 
 import com.example.nasaspaceimages.data.local.SpaceImageLocalDataSource
 import com.example.nasaspaceimages.data.remote.SpaceImageRemoteDataSource
-import com.example.nasaspaceimages.domain.model.MediaType
+import com.example.nasaspaceimages.domain.model.SearchFilters
 import com.example.nasaspaceimages.domain.model.SpaceImage
 import com.example.nasaspaceimages.domain.model.SpaceImageSearchPage
 import com.example.nasaspaceimages.domain.repository.SpaceImageRepository
@@ -36,9 +36,14 @@ class SpaceImageRepositoryImpl @Inject constructor(
 
     override suspend fun searchImages(
         query: String?,
-        page: Int
+        page: Int,
+        filters: SearchFilters
     ): SpaceImageSearchPage {
-        return remoteDataSource.searchImages(query, page)
+        return remoteDataSource.searchImages(
+            query = query,
+            page = page,
+            filters = filters
+        )
     }
 
 }

@@ -11,6 +11,9 @@ interface NasaImagesApi {
         @Query("q") query: String?,
         @Query("media_type") mediaType: String = "image",
         @Query("page") page: Int = 1,
-        @Query("page_size") pageSize: Int = 20
+        @Query("page_size") pageSize: Int = 20,
+        @Query("center") center: String? = null,
+        @Query("year_start") yearStart: Int? = null,
+        @Query("year_end") yearEnd: Int? = null
     ): NasaSearchResponseDto
 }

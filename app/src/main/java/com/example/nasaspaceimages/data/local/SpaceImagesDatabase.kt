@@ -6,7 +6,7 @@ import androidx.room3.RoomDatabase
 
 @Database(
     entities = [SpaceImageEntity::class],
-    version = 1
+    version = 2
 )
 
 abstract class SpaceImagesDatabase: RoomDatabase() {

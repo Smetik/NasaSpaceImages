@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -43,6 +42,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.lazy.LazyListState
 
 
 @StringRes
@@ -59,6 +64,7 @@ private fun SortOption.labelRes(): Int = when (this) {
 fun SpaceImageListScreen(
     onImageClick: (SpaceImage) -> Unit,
     modifier: Modifier = Modifier,
+    listState: LazyListState,
     viewModel: SpaceImageListViewModel = hiltViewModel())
 {
     val uiState by viewModel.uiState.collectAsState()
@@ -108,83 +114,87 @@ fun SpaceImageListScreen(
             Text("Пока нет сохранённых изображений")
 
         } else {
-            LazyColumn {
-                items(uiState.images) { image ->
-                    Column(
-                        modifier = Modifier.padding(12.dp)
+            LazyColumn (
+                state = listState
+            ){
+                items(
+                    items = uiState.images,
+                    key = { it.id }
+                ) { image ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
-                        AsyncImage(
-                            model = image.mediaUrl,
-                            contentDescription = image.title,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(180.dp)
-                                .clickable {
-                                    onImageClick(image)
-                                },
-                            contentScale = ContentScale.Crop
-                        )
-
-                        Text(
-                            text = image.title,
-                            modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .clickable {
-                                    onImageClick(image)
-                                }
-                        )
-
-                        if (image.comment.isNotBlank()) {
-                            Text(
-                                text = image.comment,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                        }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            IconButton(
-                                onClick = {
-                                    viewModel.toggleFavorite(image)
-                                }
+                            AsyncImage(
+                                model = image.mediaUrl,
+                                contentDescription = image.title,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(190.dp)
+                                    .clickable { onImageClick(image) }
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(
-                                    imageVector = if (image.isFavorite) {
-                                        Icons.Filled.Star
-                                    } else {
-                                        Icons.Filled.StarBorder
+                                Text(
+                                    text = image.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable { onImageClick(image) }
+                                )
+
+                                IconButton(
+                                    onClick = { viewModel.toggleFavorite(image) },
+                                    modifier = Modifier.size(40.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = if (image.isFavorite)
+                                            Icons.Filled.Star
+                                        else
+                                            Icons.Filled.StarBorder,
+                                        contentDescription = "Избранное"
+                                    )
+                                }
+
+                                IconButton(
+                                    onClick = {
+                                        imageToEdit = image
+                                        editedTitle = image.title
+                                        editedComment = image.comment
                                     },
-                                    contentDescription = if (image.isFavorite) {
-                                        "Убрать из избранного"
-                                    } else {
-                                        "Добавить в избранное"
-                                    }
-                                )
+                                    modifier = Modifier.size(40.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Edit,
+                                        contentDescription = "Редактировать"
+                                    )
+                                }
+
+                                IconButton(
+                                    onClick = { imageToDelete = image },
+                                    modifier = Modifier.size(40.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Delete,
+                                        contentDescription = "Удалить"
+                                    )
+                                }
                             }
 
-                            IconButton(
-                                onClick = {
-                                    imageToEdit = image
-                                    editedTitle = image.title
-                                    editedComment = image.comment
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Edit,
-                                    contentDescription = "Редактировать"
-                                )
-                            }
-
-                            IconButton(
-                                onClick = {
-                                    imageToDelete = image
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Delete,
-                                    contentDescription = "Удалить"
+                            if (image.comment.isNotBlank()) {
+                                Text(
+                                    text = image.comment,
+                                    style = MaterialTheme.typography.bodyMedium
                                 )
                             }
                         }

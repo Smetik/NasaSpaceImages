@@ -11,6 +11,7 @@ fun SpaceImage.toEntity(): SpaceImageEntity {
         title = title,
         description = description,
         dateCreated = dateCreated,
+        center = center,
         type = type.name,
         mediaUrl = mediaUrl,
         keywords = keywords.joinToString("|"),
@@ -26,6 +27,7 @@ fun SpaceImageEntity.toDomain(): SpaceImage {
         title = title,
         description = description,
         dateCreated = dateCreated,
+        center = center,
         type = MediaType.valueOf(type),
         mediaUrl = mediaUrl,
         keywords = if (keywords.isBlank()) {

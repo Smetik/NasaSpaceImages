@@ -25,6 +25,7 @@ fun NasaItemDto.toDomainOrNull(): SpaceImage? {
         title = data.title,
         description = data.description,
         dateCreated = data.dateCreated,
+        center = data.center,
         type = mediaType,
         mediaUrl = mediaUrl,
         keywords = data.keywords,

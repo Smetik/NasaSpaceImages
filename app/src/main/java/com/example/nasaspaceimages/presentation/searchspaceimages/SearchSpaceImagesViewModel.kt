@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Job
+import com.example.nasaspaceimages.domain.model.SearchFilters
 
 @HiltViewModel
 class SearchSpaceImagesViewModel @Inject constructor(
@@ -29,6 +30,8 @@ class SearchSpaceImagesViewModel @Inject constructor(
 
     private var activeQuery: String? = null
     private var searchJob: Job? = null
+
+    private var activeFilters = SearchFilters()
     val messages = _messages.receiveAsFlow()
     val uiState: StateFlow<SearchImagesUiState> = _uiState.asStateFlow()
 
@@ -46,9 +49,51 @@ class SearchSpaceImagesViewModel @Inject constructor(
     }
 
     fun search() {
-        activeQuery = _uiState.value.query
-            .trim()
-            .takeIf { it.isNotEmpty() }
+        val state = _uiState.value
+
+        val start = state.yearStart.trim()
+        val end = state.yearEnd.trim()
+
+        fun isValidYear(value: String): Boolean {
+            return value.isEmpty() ||
+                    (value.length == 4 &&
+                            value.all { it.isDigit() } &&
+                            value != "0000")
+        }
+
+        if (!isValidYear(start) || !isValidYear(end)) {
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    errorMessage = "Введите год в формате ГГГГ"
+                )
+            }
+            return
+        }
+
+        val startYear = start.toIntOrNull()
+        val endYear = end.toIntOrNull()
+
+        if (startYear != null &&
+            endYear != null &&
+            startYear > endYear
+        ) {
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    errorMessage = "Начальный год больше конечного"
+                )
+            }
+            return
+        }
+
+        activeQuery = state.query.trim().ifBlank { null }
+
+        activeFilters = SearchFilters(
+            center = state.center.ifBlank { null },
+            yearStart = startYear,
+            yearEnd = endYear
+        )
 
         loadPage(1)
     }
@@ -77,6 +122,7 @@ class SearchSpaceImagesViewModel @Inject constructor(
         searchJob?.cancel()
 
         val query = activeQuery
+        val filters = activeFilters
 
         searchJob = viewModelScope.launch {
             _uiState.update {
@@ -91,7 +137,8 @@ class SearchSpaceImagesViewModel @Inject constructor(
             try {
                 val result = searchSpaceImagesUseCase(
                     query = query,
-                    page = page
+                    page = page,
+                    filters = filters
                 )
 
                 _uiState.update {
@@ -141,6 +188,28 @@ class SearchSpaceImagesViewModel @Inject constructor(
             } finally {
                 savingNasaIds.remove(image.nasaId)
             }
+        }
+    }
+
+    fun onCenterChange(center: String) {
+        _uiState.update { it.copy(center = center) }
+    }
+
+    fun onYearStartChange(year: String) {
+        _uiState.update { it.copy(yearStart = year) }
+    }
+
+    fun onYearEndChange(year: String) {
+        _uiState.update { it.copy(yearEnd = year) }
+    }
+
+    fun resetFilters() {
+        _uiState.update {
+            it.copy(
+                center = "",
+                yearStart = "",
+                yearEnd = ""
+            )
         }
     }
 
