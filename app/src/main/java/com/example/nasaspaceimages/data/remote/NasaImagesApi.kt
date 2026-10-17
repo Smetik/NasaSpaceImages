@@ -1,7 +1,9 @@
 package com.example.nasaspaceimages.data.remote
 
+import com.example.nasaspaceimages.data.remote.dto.NasaAssetResponseDto
 import com.example.nasaspaceimages.data.remote.dto.NasaSearchResponseDto
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface NasaImagesApi {
@@ -16,4 +18,9 @@ interface NasaImagesApi {
         @Query("year_start") yearStart: Int? = null,
         @Query("year_end") yearEnd: Int? = null
     ): NasaSearchResponseDto
+
+    @GET("asset/{nasaId}")
+    suspend fun getAssets(
+        @Path("nasaId") nasaId: String
+    ): NasaAssetResponseDto
 }

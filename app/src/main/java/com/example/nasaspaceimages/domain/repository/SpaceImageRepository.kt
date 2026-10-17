@@ -12,4 +12,6 @@ interface SpaceImageRepository {
     suspend fun delete(imageId: Long)
 
     suspend fun searchImages(query: String?, page: Int, filters: SearchFilters): SpaceImageSearchPage
+
+    suspend fun downloadImage(image: SpaceImage): Long
 }
