@@ -1,6 +1,5 @@
 package com.example.nasaspaceimages.presentation.searchspaceimages
 
-import androidx.compose.material3.Text
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nasaspaceimages.domain.model.SpaceImage
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.Job
 
 @HiltViewModel
 class SearchSpaceImagesViewModel @Inject constructor(
@@ -26,6 +26,9 @@ class SearchSpaceImagesViewModel @Inject constructor(
     private val _messages = Channel<String>(Channel.BUFFERED)
 
     private val savingNasaIds = mutableSetOf<String>()
+
+    private var activeQuery: String? = null
+    private var searchJob: Job? = null
     val messages = _messages.receiveAsFlow()
     val uiState: StateFlow<SearchImagesUiState> = _uiState.asStateFlow()
 
@@ -43,8 +46,39 @@ class SearchSpaceImagesViewModel @Inject constructor(
     }
 
     fun search() {
-        viewModelScope.launch {
+        activeQuery = _uiState.value.query
+            .trim()
+            .takeIf { it.isNotEmpty() }
 
+        loadPage(1)
+    }
+
+    fun nextPage() {
+        if (searchJob?.isActive == true) return
+
+        val state = _uiState.value
+
+        if (state.hasNextPage) {
+            loadPage(state.page + 1)
+        }
+    }
+
+    fun previousPage() {
+        if (searchJob?.isActive == true) return
+
+        val state = _uiState.value
+
+        if (state.page > 1) {
+            loadPage(state.page - 1)
+        }
+    }
+
+    private fun loadPage(page: Int) {
+        searchJob?.cancel()
+
+        val query = activeQuery
+
+        searchJob = viewModelScope.launch {
             _uiState.update {
                 it.copy(
                     images = emptyList(),
@@ -55,26 +89,34 @@ class SearchSpaceImagesViewModel @Inject constructor(
             }
 
             try {
-                val images = searchSpaceImagesUseCase(
-                    query = _uiState.value.query.ifBlank { null },
-                    page = 1
+                val result = searchSpaceImagesUseCase(
+                    query = query,
+                    page = page
                 )
 
                 _uiState.update {
                     it.copy(
-                        images = images,
+                        images = result.images,
+                        page = page,
+                        hasNextPage = result.hasNextPage,
                         isLoading = false,
                         hasSearched = true
                     )
                 }
 
+            } catch (e: CancellationException) {
+                throw e
 
             } catch (e: Exception) {
-
                 _uiState.update {
                     it.copy(
+                        images = emptyList(),
+                        page = page,
+                        hasNextPage = false,
                         isLoading = false,
-                        errorMessage = e.message ?: "Не удалось загрузить изображения"
+                        hasSearched = true,
+                        errorMessage = e.message
+                            ?: "Не удалось загрузить изображения"
                     )
                 }
             }

@@ -9,7 +9,8 @@ data class NasaSearchResponseDto(
 
 @Serializable
 data class NasaCollectionDto(
-    val items: List<NasaItemDto>
+    val items: List<NasaItemDto>,
+    val links: List<NasaLinkDto> = emptyList()
 )
 
 @Serializable
