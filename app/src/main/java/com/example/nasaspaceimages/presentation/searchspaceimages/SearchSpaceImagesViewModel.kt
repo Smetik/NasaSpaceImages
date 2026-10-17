@@ -24,6 +24,8 @@ class SearchSpaceImagesViewModel @Inject constructor(
 ): ViewModel() {
     private val _uiState = MutableStateFlow(SearchImagesUiState())
     private val _messages = Channel<String>(Channel.BUFFERED)
+
+    private val savingNasaIds = mutableSetOf<String>()
     val messages = _messages.receiveAsFlow()
     val uiState: StateFlow<SearchImagesUiState> = _uiState.asStateFlow()
 
@@ -80,17 +82,24 @@ class SearchSpaceImagesViewModel @Inject constructor(
     }
 
     fun saveImage(image: SpaceImage) {
+        if (!savingNasaIds.add(image.nasaId)) return
+
         viewModelScope.launch {
             try {
-                saveSpaceImageUseCase(image)
-                _messages.send("Данные сохранены")
+                val saved = saveSpaceImageUseCase(image)
 
+                _messages.send(
+                    if (saved) "Изображение сохранено"
+                    else "Изображение уже сохранено"
+                )
             } catch (e: CancellationException) {
                 throw e
-
             } catch (e: Exception) {
                 _messages.send("Не удалось сохранить изображение")
+            } finally {
+                savingNasaIds.remove(image.nasaId)
             }
         }
     }
+
 }

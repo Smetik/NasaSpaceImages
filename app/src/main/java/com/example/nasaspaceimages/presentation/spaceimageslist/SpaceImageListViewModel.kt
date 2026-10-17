@@ -9,14 +9,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import androidx.lifecycle.viewModelScope
 import com.example.nasaspaceimages.domain.model.SortOption
 import com.example.nasaspaceimages.domain.model.SpaceImage
+import com.example.nasaspaceimages.domain.usecase.DeleteSpaceImageUseCase
 import com.example.nasaspaceimages.domain.usecase.UpdateSpaceImageUseCase
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+
 @HiltViewModel
 class SpaceImageListViewModel @Inject constructor(
     private val sortSpaceImagesUseCase: SortSpaceImagesUseCase,
-    private val updateSpaceImageUseCase: UpdateSpaceImageUseCase
+    private val updateSpaceImageUseCase: UpdateSpaceImageUseCase,
+    private val deleteSpaceImageUseCase: DeleteSpaceImageUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SpaceImageListUiState())
@@ -62,6 +65,27 @@ class SpaceImageListViewModel @Inject constructor(
             )
 
             updateSpaceImageUseCase(updatedImage)
+            refreshImages()
+        }
+    }
+
+    fun deleteImage(imageId: Long){
+        viewModelScope.launch {
+            deleteSpaceImageUseCase(imageId)
+            refreshImages()
+        }
+    }
+
+    fun editImage(image: SpaceImage, title: String, comment: String) {
+        if (title.isBlank()) return
+
+        viewModelScope.launch {
+            updateSpaceImageUseCase(
+                image.copy(
+                    title = title.trim(),
+                    comment = comment.trim()
+                )
+            )
             refreshImages()
         }
     }
