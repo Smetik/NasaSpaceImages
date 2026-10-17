@@ -33,6 +33,16 @@ import com.example.nasaspaceimages.domain.model.SortOption
 import com.example.nasaspaceimages.domain.model.SpaceImage
 import androidx.compose.ui.res.stringResource
 import com.example.nasaspaceimages.R
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 
 
 @StringRes
@@ -47,6 +57,7 @@ private fun SortOption.labelRes(): Int = when (this) {
 
 @Composable
 fun SpaceImageListScreen(
+    onImageClick: (SpaceImage) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SpaceImageListViewModel = hiltViewModel())
 {
@@ -107,13 +118,20 @@ fun SpaceImageListScreen(
                             contentDescription = image.title,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(180.dp),
+                                .height(180.dp)
+                                .clickable {
+                                    onImageClick(image)
+                                },
                             contentScale = ContentScale.Crop
                         )
 
                         Text(
                             text = image.title,
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                                .clickable {
+                                    onImageClick(image)
+                                }
                         )
 
                         if (image.comment.isNotBlank()) {
@@ -123,36 +141,52 @@ fun SpaceImageListScreen(
                             )
                         }
 
-                        Button(
-                            onClick = {
-                                viewModel.toggleFavorite(image)
-                            }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
                         ) {
-                            Text(
-                                if (image.isFavorite) {
-                                    "★ В избранном"
-                                } else {
-                                    "☆ В избранное"
+                            IconButton(
+                                onClick = {
+                                    viewModel.toggleFavorite(image)
                                 }
-                            )
-                        }
-
-                        Button(
-                            onClick = {
-                                imageToEdit = image
-                                editedTitle = image.title
-                                editedComment = image.comment
+                            ) {
+                                Icon(
+                                    imageVector = if (image.isFavorite) {
+                                        Icons.Filled.Star
+                                    } else {
+                                        Icons.Filled.StarBorder
+                                    },
+                                    contentDescription = if (image.isFavorite) {
+                                        "Убрать из избранного"
+                                    } else {
+                                        "Добавить в избранное"
+                                    }
+                                )
                             }
-                        ) {
-                            Text("Редактировать")
-                        }
 
-                        Button(
-                            onClick = {
-                                imageToDelete = image
+                            IconButton(
+                                onClick = {
+                                    imageToEdit = image
+                                    editedTitle = image.title
+                                    editedComment = image.comment
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "Редактировать"
+                                )
                             }
-                        ) {
-                            Text("Удалить")
+
+                            IconButton(
+                                onClick = {
+                                    imageToDelete = image
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Delete,
+                                    contentDescription = "Удалить"
+                                )
+                            }
                         }
                     }
                 }
