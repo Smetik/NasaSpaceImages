@@ -31,16 +31,40 @@ import com.example.nasaspaceimages.domain.model.SpaceImage
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 
 @Composable
 fun SearchSpaceImagesScreen (
     onImageClick: (SpaceImage) -> Unit,
     modifier: Modifier = Modifier,
+    listState: LazyListState,
     viewModel: SearchSpaceImagesViewModel = hiltViewModel()
     ) {
     val uiState by viewModel.uiState.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    var centerMenuExpanded by remember {
+        mutableStateOf(false)
+    }
+
+    var filtersExpanded by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(viewModel) {
         viewModel.messages.collect { message ->
@@ -63,12 +87,123 @@ fun SearchSpaceImagesScreen (
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Button(
-                onClick = {
-                    viewModel.search()
-                },
-                modifier = Modifier.padding(top = 8.dp)
-            ) { Text("Найти") }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = viewModel::search,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Filled.Search, contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text("Найти")
+                }
+
+                OutlinedButton(
+                    onClick = { filtersExpanded = !filtersExpanded },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Filled.Tune, contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text("Фильтры")
+                }
+            }
+
+            if (filtersExpanded) {
+                Column(
+                    modifier = Modifier.padding(top = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.yearStart,
+                            onValueChange = viewModel::onYearStartChange,
+                            label = { Text("Год от") },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        OutlinedTextField(
+                            value = uiState.yearEnd,
+                            onValueChange = viewModel::onYearEndChange,
+                            label = { Text("Год до") },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            OutlinedButton(
+                                onClick = { centerMenuExpanded = true },
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                            ) {
+                                Text(
+                                    if (uiState.center.isBlank())
+                                        "Все центры"
+                                    else
+                                        "Центр: ${uiState.center}"
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = centerMenuExpanded,
+                                onDismissRequest = {
+                                    centerMenuExpanded = false
+                                }
+                            ) {
+                                listOf(
+                                    "", "JPL", "JSC", "KSC",
+                                    "GSFC", "MSFC", "ARC", "GRC", "HQ"
+                                ).forEach { center ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(center.ifBlank { "Все центры" })
+                                        },
+                                        onClick = {
+                                            viewModel.onCenterChange(center)
+                                            centerMenuExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+
+                        OutlinedButton(
+                            onClick = viewModel::resetFilters,
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                        ) {
+                            Text("Сбросить")
+                        }
+                    }
+                }
+            }
 
             when {
                 uiState.isLoading -> {
@@ -86,6 +221,7 @@ fun SearchSpaceImagesScreen (
                 else -> {
 
                     LazyColumn (
+                        state = listState,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()

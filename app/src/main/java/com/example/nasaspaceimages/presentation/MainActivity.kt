@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import com.example.nasaspaceimages.domain.model.SpaceImage
 import com.example.nasaspaceimages.presentation.spaceimagedetail.SpaceImageDetailScreen
+import androidx.compose.foundation.lazy.rememberLazyListState
 
 
 @AndroidEntryPoint
@@ -46,6 +47,9 @@ class MainActivity : ComponentActivity() {
                 var selectedImage by remember {
                     mutableStateOf<SpaceImage?>(null)
                 }
+
+                val searchListState = rememberLazyListState()
+                val catalogListState = rememberLazyListState()
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
@@ -94,16 +98,14 @@ class MainActivity : ComponentActivity() {
                     } else {
                         when (selectedTab) {
                             0 -> SearchSpaceImagesScreen(
-                                onImageClick = {
-                                    selectedImage = it
-                                },
+                                onImageClick = { selectedImage = it },
+                                listState = searchListState,
                                 modifier = Modifier.padding(innerPadding)
                             )
 
                             1 -> SpaceImageListScreen(
-                                onImageClick = {
-                                    selectedImage = it
-                                },
+                                onImageClick = { selectedImage = it },
+                                listState = catalogListState,
                                 modifier = Modifier.padding(innerPadding)
                             )
                         }
