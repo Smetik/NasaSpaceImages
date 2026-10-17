@@ -28,6 +28,9 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import androidx.compose.foundation.clickable
 import com.example.nasaspaceimages.domain.model.SpaceImage
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.OutlinedButton
 
 @Composable
 fun SearchSpaceImagesScreen (
@@ -128,6 +131,32 @@ fun SearchSpaceImagesScreen (
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            if (uiState.hasSearched && uiState.errorMessage == null) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedButton(
+                        onClick = viewModel::previousPage,
+                        enabled = uiState.page > 1 && !uiState.isLoading
+                    ) {
+                        Text("Назад")
+                    }
+
+                    Text("Страница ${uiState.page}")
+
+                    OutlinedButton(
+                        onClick = viewModel::nextPage,
+                        enabled = uiState.hasNextPage && !uiState.isLoading
+                    ) {
+                        Text("Вперёд")
                     }
                 }
             }

@@ -7,5 +7,7 @@ data class SearchImagesUiState (
     val images: List<SpaceImage> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val hasSearched: Boolean = false
+    val hasSearched: Boolean = false,
+    val page: Int = 1,
+    val hasNextPage: Boolean = false
 )

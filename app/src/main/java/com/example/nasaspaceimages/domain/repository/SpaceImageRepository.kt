@@ -1,6 +1,7 @@
 package com.example.nasaspaceimages.domain.repository
 
 import com.example.nasaspaceimages.domain.model.SpaceImage
+import com.example.nasaspaceimages.domain.model.SpaceImageSearchPage
 
 interface SpaceImageRepository {
     suspend fun getSavedImages(): List<SpaceImage>
@@ -9,5 +10,5 @@ interface SpaceImageRepository {
     suspend fun update(image: SpaceImage)
     suspend fun delete(imageId: Long)
 
-    suspend fun searchImages(query: String?, page: Int): List<SpaceImage>
+    suspend fun searchImages(query: String?, page: Int): SpaceImageSearchPage
 }
