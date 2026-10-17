@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class SpaceImageDto (
     val center: String = "",
 
-    @SerialName("data_created")
+    @SerialName("date_created")
     val dateCreated: String = "",
 
     val description: String,

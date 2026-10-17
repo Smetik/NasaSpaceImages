@@ -23,6 +23,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import com.example.nasaspaceimages.domain.model.SpaceImage
+import com.example.nasaspaceimages.presentation.spaceimagedetail.SpaceImageDetailScreen
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -38,55 +43,70 @@ class MainActivity : ComponentActivity() {
                     mutableIntStateOf(0)
                 }
 
+                var selectedImage by remember {
+                    mutableStateOf<SpaceImage?>(null)
+                }
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
 
                     bottomBar = {
-                        NavigationBar {
+                        if (selectedImage == null) {
+                            NavigationBar {
+                                NavigationBarItem(
+                                    selected = selectedTab == 0,
+                                    onClick = { selectedTab = 0 },
+                                    icon = {
+                                        Icon(
+                                            Icons.Default.Search,
+                                            contentDescription = null
+                                        )
+                                    },
+                                    label = { Text("Поиск NASA") }
+                                )
 
-                            NavigationBarItem(
-                                selected = selectedTab == 0,
-                                onClick = {
-                                    selectedTab = 0
-                                },
-                                icon = {
-                                    Icon(
-                                        Icons.Default.Search,
-                                        contentDescription = null
-                                    )
-                                },
-                                label = {
-                                    Text("Поиск NASA")
-                                }
-                            )
-
-                            NavigationBarItem(
-                                selected = selectedTab == 1,
-                                onClick = {
-                                    selectedTab = 1
-                                },
-                                icon = {
-                                    Icon(
-                                        Icons.Default.List,
-                                        contentDescription = null
-                                    )
-                                },
-                                label = {
-                                    Text("Мой каталог")
-                                }
-                            )
+                                NavigationBarItem(
+                                    selected = selectedTab == 1,
+                                    onClick = { selectedTab = 1 },
+                                    icon = {
+                                        Icon(
+                                            Icons.Default.List,
+                                            contentDescription = null
+                                        )
+                                    },
+                                    label = { Text("Мой каталог") }
+                                )
+                            }
                         }
                     }
                 ) { innerPadding ->
 
-                    when (selectedTab) {
-                        0 -> SearchSpaceImagesScreen(
-                            modifier = Modifier.padding(innerPadding)
-                        )
+                    val image = selectedImage
 
-                        1 -> SpaceImageListScreen(
+                    if (image != null) {
+                        SpaceImageDetailScreen(
+                            image = image,
+                            onBack = {
+                                selectedImage = null
+                            },
                             modifier = Modifier.padding(innerPadding)
                         )
+                    } else {
+                        when (selectedTab) {
+                            0 -> SearchSpaceImagesScreen(
+                                onImageClick = {
+                                    selectedImage = it
+                                },
+                                modifier = Modifier.padding(innerPadding)
+                            )
+
+                            1 -> SpaceImageListScreen(
+                                onImageClick = {
+                                    selectedImage = it
+                                },
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                        }
                     }
                 }
             }

@@ -26,9 +26,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
+import androidx.compose.foundation.clickable
+import com.example.nasaspaceimages.domain.model.SpaceImage
 
 @Composable
 fun SearchSpaceImagesScreen (
+    onImageClick: (SpaceImage) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchSpaceImagesViewModel = hiltViewModel()
     ) {
@@ -98,13 +101,20 @@ fun SearchSpaceImagesScreen (
                                         contentDescription = image.title,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(180.dp),
+                                            .height(180.dp)
+                                            .clickable {
+                                                onImageClick(image)
+                                            },
                                         contentScale = ContentScale.Crop
                                     )
 
                                     Text(
                                         text = image.title,
-                                        modifier = Modifier.padding(top = 8.dp)
+                                        modifier = Modifier
+                                            .padding(top = 8.dp)
+                                            .clickable {
+                                                onImageClick(image)
+                                            }
                                     )
 
                                     Button(
