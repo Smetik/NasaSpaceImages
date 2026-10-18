@@ -1,13 +1,13 @@
 package com.example.nasaspaceimages.domain.usecase
 
 import com.example.nasaspaceimages.domain.model.SpaceImage
-import com.example.nasaspaceimages.domain.repository.SpaceImageRepository
+import com.example.nasaspaceimages.domain.repository.SavedImagesRepository
 import javax.inject.Inject
 
 class UpdateSpaceImageUseCase @Inject constructor(
-    private val repository: SpaceImageRepository
+    private val repository: SavedImagesRepository
 ) {
-    suspend operator fun invoke (image: SpaceImage){
+    suspend operator fun invoke(image: SpaceImage) {
         repository.update(image)
     }
 }

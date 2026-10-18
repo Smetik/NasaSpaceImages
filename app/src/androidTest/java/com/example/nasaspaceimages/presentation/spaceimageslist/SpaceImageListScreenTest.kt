@@ -8,10 +8,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.example.nasaspaceimages.domain.model.MediaType
-import com.example.nasaspaceimages.domain.model.SearchFilters
 import com.example.nasaspaceimages.domain.model.SpaceImage
-import com.example.nasaspaceimages.domain.model.SpaceImageSearchPage
-import com.example.nasaspaceimages.domain.repository.SpaceImageRepository
+import com.example.nasaspaceimages.domain.repository.SavedImagesRepository
 import com.example.nasaspaceimages.domain.usecase.DeleteSpaceImageUseCase
 import com.example.nasaspaceimages.domain.usecase.SortSpaceImagesUseCase
 import com.example.nasaspaceimages.domain.usecase.UpdateSpaceImageUseCase
@@ -144,7 +142,7 @@ class SpaceImageListScreenTest {
 
 private class UiFakeSpaceImageRepository(
     initialImages: List<SpaceImage>
-) : SpaceImageRepository {
+) : SavedImagesRepository {
 
     private val images = initialImages.toMutableList()
 
@@ -170,20 +168,5 @@ private class UiFakeSpaceImageRepository(
 
     override suspend fun delete(imageId: Long) {
         images.removeAll { it.id == imageId }
-    }
-
-    override suspend fun searchImages(
-        query: String?,
-        page: Int,
-        filters: SearchFilters
-    ): SpaceImageSearchPage {
-        return SpaceImageSearchPage(
-            images = emptyList(),
-            hasNextPage = false
-        )
-    }
-
-    override suspend fun downloadImage(image: SpaceImage): Long {
-        return 1L
     }
 }

@@ -1,12 +1,10 @@
 package com.example.nasaspaceimages.domain.usecase
 
 import com.example.nasaspaceimages.domain.model.MediaType
-import com.example.nasaspaceimages.domain.model.SearchFilters
 import com.example.nasaspaceimages.domain.model.SpaceImage
-import com.example.nasaspaceimages.domain.model.SpaceImageSearchPage
-import com.example.nasaspaceimages.domain.repository.SpaceImageRepository
+import com.example.nasaspaceimages.domain.repository.SavedImagesRepository
 
-class FakeSpaceImageRepository : SpaceImageRepository {
+class FakeSpaceImageRepository : SavedImagesRepository {
 
     private val images = mutableListOf<SpaceImage>()
 
@@ -37,21 +35,6 @@ class FakeSpaceImageRepository : SpaceImageRepository {
 
     override suspend fun delete(imageId: Long) {
         images.removeAll { it.id == imageId }
-    }
-
-    override suspend fun searchImages(
-        query: String?,
-        page: Int,
-        filters: SearchFilters
-    ): SpaceImageSearchPage {
-        return SpaceImageSearchPage(
-            images = emptyList(),
-            hasNextPage = false
-        )
-    }
-
-    override suspend fun downloadImage(image: SpaceImage): Long {
-        return 1L
     }
 }
 
