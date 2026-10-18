@@ -6,29 +6,22 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
-import com.example.nasaspaceimages.presentation.searchspaceimages.SearchSpaceImagesScreen
-import com.example.nasaspaceimages.presentation.spaceimageslist.SpaceImageListScreen
-import com.example.nasaspaceimages.presentation.theme.NASASpaceImagesTheme
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.nasaspaceimages.R
 import com.example.nasaspaceimages.domain.model.SpaceImage
+import com.example.nasaspaceimages.presentation.searchspaceimages.SearchSpaceImagesScreen
 import com.example.nasaspaceimages.presentation.spaceimagedetail.SpaceImageDetailScreen
-import androidx.compose.foundation.lazy.rememberLazyListState
-
+import com.example.nasaspaceimages.presentation.spaceimageslist.SpaceImageListScreen
+import com.example.nasaspaceimages.presentation.theme.NASASpaceImagesTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -39,7 +32,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             NASASpaceImagesTheme {
-
                 var selectedTab by rememberSaveable {
                     mutableIntStateOf(0)
                 }
@@ -53,7 +45,6 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-
                     bottomBar = {
                         if (selectedImage == null) {
                             NavigationBar {
@@ -66,7 +57,9 @@ class MainActivity : ComponentActivity() {
                                             contentDescription = null
                                         )
                                     },
-                                    label = { Text("Поиск NASA") }
+                                    label = {
+                                        Text(stringResource(R.string.nav_search))
+                                    }
                                 )
 
                                 NavigationBarItem(
@@ -78,33 +71,36 @@ class MainActivity : ComponentActivity() {
                                             contentDescription = null
                                         )
                                     },
-                                    label = { Text("Мой каталог") }
+                                    label = {
+                                        Text(stringResource(R.string.nav_catalog))
+                                    }
                                 )
                             }
                         }
                     }
                 ) { innerPadding ->
-
                     val image = selectedImage
 
                     if (image != null) {
                         SpaceImageDetailScreen(
                             image = image,
-                            onBack = {
-                                selectedImage = null
-                            },
+                            onBack = { selectedImage = null },
                             modifier = Modifier.padding(innerPadding)
                         )
                     } else {
                         when (selectedTab) {
                             0 -> SearchSpaceImagesScreen(
-                                onImageClick = { selectedImage = it },
+                                onImageClick = {
+                                    selectedImage = it
+                                },
                                 listState = searchListState,
                                 modifier = Modifier.padding(innerPadding)
                             )
 
                             1 -> SpaceImageListScreen(
-                                onImageClick = { selectedImage = it },
+                                onImageClick = {
+                                    selectedImage = it
+                                },
                                 listState = catalogListState,
                                 modifier = Modifier.padding(innerPadding)
                             )

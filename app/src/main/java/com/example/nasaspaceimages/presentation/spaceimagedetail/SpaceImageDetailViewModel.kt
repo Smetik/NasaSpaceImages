@@ -2,6 +2,7 @@ package com.example.nasaspaceimages.presentation.spaceimagedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nasaspaceimages.R
 import com.example.nasaspaceimages.domain.model.SpaceImage
 import com.example.nasaspaceimages.domain.usecase.DownloadSpaceImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ class SpaceImageDetailViewModel @Inject constructor(
     private val downloadUseCase: DownloadSpaceImageUseCase
 ) : ViewModel() {
 
-    private val _messages = Channel<String>(Channel.BUFFERED)
+    private val _messages = Channel<Int>(Channel.BUFFERED)
     val messages = _messages.receiveAsFlow()
 
     private var isDownloading = false
@@ -29,11 +30,11 @@ class SpaceImageDetailViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 downloadUseCase(image)
-                _messages.send("Загрузка началась")
+                _messages.send(R.string.download_started)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _messages.send("Не удалось начать загрузку")
+                _messages.send(R.string.download_failed)
             } finally {
                 isDownloading = false
             }
