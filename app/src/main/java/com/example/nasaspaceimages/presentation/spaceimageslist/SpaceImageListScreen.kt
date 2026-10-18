@@ -71,7 +71,10 @@ fun SpaceImageListScreen(
                             Text(stringResource(option.labelRes()))
                         },
                         onClick = {
-                            viewModel.changeSortOption(option)
+                            if (option != uiState.sortOption) {
+                                listState.requestScrollToItem(0)
+                                viewModel.changeSortOption(option)
+                            }
                             sortMenuExpanded = false
                         }
                     )

@@ -2,11 +2,12 @@ package com.example.nasaspaceimages.domain.usecase
 
 import com.example.nasaspaceimages.domain.model.SearchFilters
 import com.example.nasaspaceimages.domain.model.SpaceImageSearchPage
-import com.example.nasaspaceimages.domain.repository.SpaceImageRepository
+import com.example.nasaspaceimages.domain.repository.NasaSearchRepository
 import javax.inject.Inject
 
-class SearchSpaceImagesUseCase @Inject constructor(private val repository: SpaceImageRepository){
-
+class SearchSpaceImagesUseCase @Inject constructor(
+    private val repository: NasaSearchRepository
+) {
     suspend operator fun invoke(
         query: String?,
         page: Int,
