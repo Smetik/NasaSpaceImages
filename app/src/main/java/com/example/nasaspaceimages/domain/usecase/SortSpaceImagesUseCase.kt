@@ -9,10 +9,6 @@ class SortSpaceImagesUseCase @Inject constructor (private val repository: SpaceI
     suspend operator fun invoke (sortBy: SortOption): List<SpaceImage> {
         val spaceImages = repository.getSavedImages()
 
-        spaceImages.forEach {
-            println("${it.title} — ${it.dateCreated}")
-        }
-
         return when (sortBy){
             SortOption.TITLE_ASC -> spaceImages.sortedBy { it.title }
             SortOption.TITLE_DESC -> spaceImages.sortedByDescending { it.title }

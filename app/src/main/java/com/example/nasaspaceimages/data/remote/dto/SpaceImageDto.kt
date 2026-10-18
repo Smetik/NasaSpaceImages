@@ -11,7 +11,7 @@ data class SpaceImageDto (
     @SerialName("date_created")
     val dateCreated: String = "",
 
-    val description: String,
+    val description: String = "",
     val keywords: List<String> = emptyList(),
 
     @SerialName("media_type")

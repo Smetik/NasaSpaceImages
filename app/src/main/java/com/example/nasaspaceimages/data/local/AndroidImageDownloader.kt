@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import com.example.nasaspaceimages.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -32,7 +33,9 @@ class AndroidImageDownloader @Inject constructor(
 
         val request = DownloadManager.Request(Uri.parse(url))
             .setTitle(title)
-            .setDescription("Загрузка изображения NASA")
+            .setDescription(
+                context.getString(R.string.download_description)
+            )
             .setNotificationVisibility(
                 DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
             )

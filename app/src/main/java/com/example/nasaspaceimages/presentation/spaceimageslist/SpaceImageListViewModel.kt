@@ -1,19 +1,18 @@
 package com.example.nasaspaceimages.presentation.spaceimageslist
+
 import androidx.lifecycle.ViewModel
-import com.example.nasaspaceimages.domain.usecase.SortSpaceImagesUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import androidx.lifecycle.viewModelScope
 import com.example.nasaspaceimages.domain.model.SortOption
 import com.example.nasaspaceimages.domain.model.SpaceImage
 import com.example.nasaspaceimages.domain.usecase.DeleteSpaceImageUseCase
+import com.example.nasaspaceimages.domain.usecase.SortSpaceImagesUseCase
 import com.example.nasaspaceimages.domain.usecase.UpdateSpaceImageUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
+import javax.inject.Inject
 
 @HiltViewModel
 class SpaceImageListViewModel @Inject constructor(
@@ -23,11 +22,7 @@ class SpaceImageListViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SpaceImageListUiState())
-    val uiState: StateFlow<SpaceImageListUiState> = _uiState.asStateFlow()
-
-    init {
-        loadImages()
-    }
+    val uiState = _uiState.asStateFlow()
 
     private fun loadImages() = viewModelScope.launch {
         _uiState.update {
@@ -46,37 +41,38 @@ class SpaceImageListViewModel @Inject constructor(
         }
     }
 
-    fun changeSortOption(sortOption: SortOption) {
-        _uiState.update {
-            it.copy(sortOption = sortOption)
-        }
-
+    fun refreshImages() {
         loadImages()
     }
 
-    fun refreshImages() {
+    fun changeSortOption(option: SortOption) {
+        _uiState.update {
+            it.copy(sortOption = option)
+        }
         loadImages()
     }
 
     fun toggleFavorite(image: SpaceImage) {
         viewModelScope.launch {
-            val updatedImage = image.copy(
-                isFavorite = !image.isFavorite
+            updateSpaceImageUseCase(
+                image.copy(isFavorite = !image.isFavorite)
             )
-
-            updateSpaceImageUseCase(updatedImage)
             refreshImages()
         }
     }
 
-    fun deleteImage(imageId: Long){
+    fun deleteImage(imageId: Long) {
         viewModelScope.launch {
             deleteSpaceImageUseCase(imageId)
             refreshImages()
         }
     }
 
-    fun editImage(image: SpaceImage, title: String, comment: String) {
+    fun editImage(
+        image: SpaceImage,
+        title: String,
+        comment: String
+    ) {
         if (title.isBlank()) return
 
         viewModelScope.launch {

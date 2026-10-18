@@ -1,74 +1,57 @@
 package com.example.nasaspaceimages.presentation.searchspaceimages
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.compose.material3.Card
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.layout.ContentScale
-import coil3.compose.AsyncImage
-import androidx.compose.foundation.clickable
-import com.example.nasaspaceimages.domain.model.SpaceImage
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material3.Icon
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+
+import com.example.nasaspaceimages.R
+import com.example.nasaspaceimages.domain.model.SpaceImage
+import com.example.nasaspaceimages.presentation.components.SpaceImageCard
 
 @Composable
-fun SearchSpaceImagesScreen (
+fun SearchSpaceImagesScreen(
     onImageClick: (SpaceImage) -> Unit,
-    modifier: Modifier = Modifier,
     listState: LazyListState,
+    modifier: Modifier = Modifier,
     viewModel: SearchSpaceImagesViewModel = hiltViewModel()
-    ) {
+) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    var centerMenuExpanded by remember {
-        mutableStateOf(false)
+    val snackbarHostState = remember {
+        SnackbarHostState()
     }
+
+    val resources = LocalResources.current
 
     var filtersExpanded by rememberSaveable {
         mutableStateOf(false)
     }
 
-    LaunchedEffect(viewModel) {
-        viewModel.messages.collect { message ->
-            snackbarHostState.showSnackbar(message)
+    var centerMenuExpanded by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(viewModel, resources) {
+        viewModel.messages.collect { messageRes ->
+            snackbarHostState.showSnackbar(
+                resources.getString(messageRes)
+            )
         }
     }
 
@@ -78,37 +61,51 @@ fun SearchSpaceImagesScreen (
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             OutlinedTextField(
                 value = uiState.query,
-                onValueChange = { query -> viewModel.onQueryChange(query) },
-                label = { Text("Поиск изображений") },
-                modifier = Modifier.fillMaxWidth()
+                onValueChange = viewModel::onQueryChange,
+                label = {
+                    Text(stringResource(R.string.search_hint))
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
                     onClick = viewModel::search,
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(Icons.Filled.Search, contentDescription = null)
+                    Icon(
+                        Icons.Filled.Search,
+                        contentDescription = null
+                    )
+
                     Spacer(Modifier.width(6.dp))
-                    Text("Найти")
+
+                    Text(stringResource(R.string.search))
                 }
 
                 OutlinedButton(
-                    onClick = { filtersExpanded = !filtersExpanded },
+                    onClick = {
+                        filtersExpanded = !filtersExpanded
+                    },
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(Icons.Filled.Tune, contentDescription = null)
+                    Icon(
+                        Icons.Filled.Tune,
+                        contentDescription = null
+                    )
+
                     Spacer(Modifier.width(6.dp))
-                    Text("Фильтры")
+
+                    Text(stringResource(R.string.filters))
                 }
             }
 
@@ -117,8 +114,6 @@ fun SearchSpaceImagesScreen (
                     modifier = Modifier.padding(top = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -126,7 +121,9 @@ fun SearchSpaceImagesScreen (
                         OutlinedTextField(
                             value = uiState.yearStart,
                             onValueChange = viewModel::onYearStartChange,
-                            label = { Text("Год от") },
+                            label = {
+                                Text(stringResource(R.string.year_from))
+                            },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number
@@ -138,7 +135,9 @@ fun SearchSpaceImagesScreen (
                         OutlinedTextField(
                             value = uiState.yearEnd,
                             onValueChange = viewModel::onYearEndChange,
-                            label = { Text("Год до") },
+                            label = {
+                                Text(stringResource(R.string.year_to))
+                            },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number
@@ -148,24 +147,31 @@ fun SearchSpaceImagesScreen (
                         )
                     }
 
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Box(modifier = Modifier.weight(1f)) {
+                        Box(
+                            modifier = Modifier.weight(1f)
+                        ) {
                             OutlinedButton(
-                                onClick = { centerMenuExpanded = true },
+                                onClick = {
+                                    centerMenuExpanded = true
+                                },
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(48.dp)
                             ) {
                                 Text(
-                                    if (uiState.center.isBlank())
-                                        "Все центры"
-                                    else
-                                        "Центр: ${uiState.center}"
+                                    if (uiState.center.isBlank()) {
+                                        stringResource(R.string.all_centers)
+                                    } else {
+                                        stringResource(
+                                            R.string.selected_center,
+                                            uiState.center
+                                        )
+                                    }
                                 )
                             }
 
@@ -181,7 +187,13 @@ fun SearchSpaceImagesScreen (
                                 ).forEach { center ->
                                     DropdownMenuItem(
                                         text = {
-                                            Text(center.ifBlank { "Все центры" })
+                                            Text(
+                                                if (center.isBlank()) {
+                                                    stringResource(R.string.all_centers)
+                                                } else {
+                                                    center
+                                                }
+                                            )
                                         },
                                         onClick = {
                                             viewModel.onCenterChange(center)
@@ -199,7 +211,7 @@ fun SearchSpaceImagesScreen (
                                 .weight(1f)
                                 .height(48.dp)
                         ) {
-                            Text("Сбросить")
+                            Text(stringResource(R.string.reset_filters))
                         }
                     }
                 }
@@ -210,72 +222,59 @@ fun SearchSpaceImagesScreen (
                     CircularProgressIndicator()
                 }
 
-                uiState.errorMessage != null -> {
-                    Text(text = uiState.errorMessage!!)
+                uiState.errorResId != null -> {
+                    val errorResId = uiState.errorResId
+
+                    if (errorResId != null) {
+                        Text(stringResource(errorResId))
+                    }
                 }
 
                 uiState.hasSearched && uiState.images.isEmpty() -> {
-                    Text("По вашему запросу ничего не найдено")
+                    Text(stringResource(R.string.nothing_found))
                 }
 
                 else -> {
-
-                    LazyColumn (
+                    LazyColumn(
                         state = listState,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                    ){
-                        items(uiState.images) { image ->
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp)
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(12.dp)
-                                ) {
-                                    AsyncImage(
-                                        model = image.mediaUrl,
-                                        contentDescription = image.title,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(180.dp)
-                                            .clickable {
-                                                onImageClick(image)
-                                            },
-                                        contentScale = ContentScale.Crop
-                                    )
+                    ) {
+                        items(
+                            items = uiState.images,
+                            key = { it.nasaId }
+                        ) { image ->
 
-                                    Text(
-                                        text = image.title,
-                                        modifier = Modifier
-                                            .padding(top = 8.dp)
-                                            .clickable {
-                                                onImageClick(image)
-                                            }
-                                    )
-
+                            SpaceImageCard(
+                                image = image,
+                                onOpen = {
+                                    onImageClick(image)
+                                },
+                                modifier = Modifier.padding(
+                                    vertical = 8.dp
+                                ),
+                                bottomContent = {
                                     Button(
                                         onClick = {
                                             viewModel.saveImage(image)
-                                        },
-                                        modifier = Modifier.padding(top = 8.dp)
+                                        }
                                     ) {
-                                        Text("Сохранить")
+                                        Text(stringResource(R.string.save))
                                     }
                                 }
-                            }
+                            )
                         }
                     }
                 }
             }
 
-            if (uiState.hasSearched && uiState.errorMessage == null) {
+            if (
+                uiState.hasSearched &&
+                uiState.errorResId == null
+            ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -283,21 +282,26 @@ fun SearchSpaceImagesScreen (
                         onClick = viewModel::previousPage,
                         enabled = uiState.page > 1 && !uiState.isLoading
                     ) {
-                        Text("Назад")
+                        Text(stringResource(R.string.back))
                     }
 
-                    Text("Страница ${uiState.page}")
+                    Text(
+                        stringResource(
+                            R.string.page_number,
+                            uiState.page
+                        )
+                    )
 
                     OutlinedButton(
                         onClick = viewModel::nextPage,
                         enabled = uiState.hasNextPage && !uiState.isLoading
                     ) {
-                        Text("Вперёд")
+                        Text(stringResource(R.string.next))
                     }
                 }
             }
-
         }
+
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)

@@ -1,10 +1,60 @@
 <resources>
     <string name="app_name">NASA Space Images</string>
 
+    <string name="nav_search">Поиск NASA</string>
+    <string name="nav_catalog">Мой каталог</string>
+    <string name="back">Назад</string>
+    <string name="next">Вперёд</string>
+
+    <string name="search_hint">Поиск изображений</string>
+    <string name="search">Найти</string>
+    <string name="filters">Фильтры</string>
+    <string name="year_from">Год от</string>
+    <string name="year_to">Год до</string>
+    <string name="all_centers">Все центры</string>
+    <string name="selected_center">Центр: %1$s</string>
+    <string name="reset_filters">Сбросить</string>
+    <string name="nothing_found">По вашему запросу ничего не найдено</string>
+    <string name="page_number">Страница %1$d</string>
+
+    <string name="empty_catalog">Пока нет сохранённых изображений</string>
+    <string name="save">Сохранить</string>
+    <string name="edit">Редактировать</string>
+    <string name="delete">Удалить</string>
+    <string name="cancel">Отмена</string>
+    <string name="favorite_remove">Убрать из избранного</string>
+    <string name="favorite_add">Добавить в избранное</string>
+    <string name="in_favorites">В избранном</string>
+    <string name="edit_image_title">Редактирование фотографии</string>
+    <string name="delete_image_title">Удалить фотографию?</string>
+    <string name="delete_image_message">«%1$s» будет удалена из каталога.</string>
+    <string name="image_title">Название</string>
+    <string name="comment">Комментарий</string>
+
+    <string name="download_original">Скачать оригинал</string>
+    <string name="image_nasa_id">NASA ID: %1$s</string>
+    <string name="image_center">Центр NASA: %1$s</string>
+    <string name="image_date">Дата создания: %1$s</string>
+    <string name="image_type">Тип: %1$s</string>
+    <string name="image_keywords">Ключевые слова: %1$s</string>
+    <string name="description">Описание</string>
+    <string name="description_missing">Описание отсутствует</string>
+    <string name="my_comment">Мой комментарий</string>
+
+    <string name="saved_successfully">Данные сохранены</string>
+    <string name="already_saved">Изображение уже сохранено</string>
+    <string name="save_failed">Не удалось сохранить изображение</string>
+    <string name="download_started">Загрузка началась</string>
+    <string name="download_failed">Не удалось начать загрузку</string>
+    <string name="download_description">Загрузка изображения NASA</string>
+    <string name="search_failed">Не удалось загрузить изображения</string>
+    <string name="invalid_year">Введите год в формате ГГГГ</string>
+    <string name="invalid_year_range">Начальный год больше конечного</string>
+
     <string name="sort_title_asc">Название: A–Z</string>
     <string name="sort_title_desc">Название: Z–A</string>
-    <string name="sort_date_newest">Сначала недавно сохраненные</string>
-    <string name="sort_date_oldest">Сначала давно сохраненные</string>
+    <string name="sort_date_newest">Сначала недавно сохранённые</string>
+    <string name="sort_date_oldest">Сначала давно сохранённые</string>
     <string name="sort_favorite_first">Сначала избранные</string>
     <string name="sort_favorite_last">Избранные в конце</string>
 </resources>
