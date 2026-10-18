@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+    testImplementation(libs.kotlinx.coroutines.test)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.room.runtime)
